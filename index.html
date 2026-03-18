@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Eternal Love Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <style>
+        body {
+            margin: 0; padding: 0; background-color: #0d0a0b;
+            font-family: 'Cairo', sans-serif; color: #ffffff;
+            overflow-x: hidden; min-height: 100vh;
+        }
+
+        .status-bar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 25px;
+            background-color: #000; display: flex; justify-content: space-between;
+            align-items: center; padding: 0 10px; font-size: 11px;
+            color: rgba(255, 255, 255, 0.7); z-index: 1000; box-sizing: border-box;
+        }
+        .status-bar span { direction: ltr; display: inline-block; }
+
+        .hearts-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        .heart {
+            position: absolute; width: 10px; height: 10px;
+            background: rgba(255, 126, 179, 0.6); transform: rotate(45deg);
+            box-shadow: 0 0 10px rgba(255, 126, 179, 0.8); animation: fall linear infinite;
+        }
+        .heart::before, .heart::after {
+            content: ''; position: absolute; width: 10px; height: 10px;
+            background: rgba(255, 126, 179, 0.6); border-radius: 50%;
+        }
+        .heart::before { top: -5px; left: 0; }
+        .heart::after { top: 0; left: -5px; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(45deg); opacity: 0; } }
+
+        .screen-container {
+            position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 10; transition: opacity 0.5s ease;
+            padding: 40px 0;
+        }
+        .card {
+            background: linear-gradient(145deg, #1f1517, #110b0d);
+            border: 1px solid #3d272b; border-radius: 35px; padding: 40px 20px;
+            text-align: center; box-shadow: 0 0 50px rgba(255, 105, 135, 0.08);
+            width: 85%; max-width: 360px;
+        }
+
+        h1 { font-size: 32px; margin-bottom: 8px; font-weight: 800; color: #ffffff; }
+        .input-container input {
+            box-sizing: border-box; background: rgba(42, 31, 34, 0.5);
+            color: #8c7377; border: 1px solid #3d272b; border-radius: 25px;
+            padding: 16px; width: 100%; text-align: center; margin-bottom: 25px;
+        }
+        .input-container input:disabled {
+            opacity: 0.4; cursor: not-allowed;
+        }
+        
+        .btn-glow {
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            color: white; border: none; border-radius: 25px; padding: 16px; width: 100%;
+            font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 0 25px rgba(255, 117, 140, 0.6);
+        }
+
+        .counter-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; }
+        .counter-box {
+            background: rgba(42, 31, 34, 0.5); border: 1px solid rgba(255, 105, 135, 0.4);
+            border-radius: 12px; padding: 8px;
+        }
+        .counter-value { font-size: 22px; font-weight: 800; }
+        .counter-label { font-size: 10px; color: #c4a7ab; }
+
+        .audio-section {
+            background: rgba(42, 31, 34, 0.5); border: 1px solid rgba(255, 105, 135, 0.4);
+            border-radius: 20px; padding: 15px; margin-bottom: 30px;
+        }
+        .album-art { width: 45px; height: 45px; border-radius: 10px; margin-left: 10px; overflow: hidden; }
+        .album-art img { width: 100%; height: 100%; object-fit: cover; }
+        .play-pause-btn { background: rgba(255, 105, 135, 0.2); color: #ff7eb3; border: 1px solid rgba(255, 105, 135, 0.4); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 18px; }
+        .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; margin: 15px 0; }
+        .progress-bar { height: 100%; background: #ff758c; width: 0%; border-radius: 3px; }
+
+        .letters-intro { font-size: 14px; color: #ff7eb3; margin-bottom: 15px; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .dot { width: 6px; height: 6px; background: #ff7eb3; border-radius: 50%; display: inline-block; animation: wave 1.3s infinite ease-in-out; }
+        .dot:nth-child(2) { animation-delay: -1.1s; }
+        .dot:nth-child(3) { animation-delay: -0.9s; }
+        @keyframes wave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
+
+        .letters-grid { display: flex; flex-direction: column; gap: 20px; align-items: center; margin-top: 10px; }
+        .letter-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .letter-icon {
+            width: 60px; height: 60px; background: rgba(42, 31, 34, 0.6);
+            border: 1px solid #3d272b; border-radius: 18px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 28px; cursor: pointer; transition: 0.3s;
+        }
+        
+        .locked { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+
+        .full-content-box {
+            width: 90%; background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px; padding: 15px; font-size: 14px; line-height: 1.5;
+            display: none; border: 1px solid rgba(255, 126, 179, 0.2);
+            text-align: right; animation: slideDown 0.5s forwards;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes flyOval {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            50% { transform: translate(40px, -80px) scale(1.1); }
+            100% { transform: translate(0, -300px) scale(0); opacity: 0; }
+        }
+        .flying { animation: flyOval 0.8s forwards ease-in-out; }
+        .trail-heart { position: absolute; font-size: 12px; pointer-events: none; animation: trail 0.6s forwards; }
+        @keyframes trail { to { opacity: 0; transform: translateY(-20px); } }
+
+        /* تأثير الثلج الرومانسي */
+        .snowflake {
+            position: absolute; top: -10px; background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%; box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            animation: fallSnow linear forwards; pointer-events: none; z-index: 1;
+        }
+        @keyframes fallSnow {
+            0% { transform: translateY(0) translateX(0); opacity: 1; }
+            100% { transform: translateY(110vh) translateX(30px); opacity: 0; }
+        }
+
+        .letter-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 2000;
+            display: none; justify-content: center; align-items: center; overflow: hidden;
+        }
+        .letter-content {
+            background: #1a1516; border: 2px solid #ff7eb3; border-radius: 25px;
+            padding: 30px; width: 85%; max-width: 320px; text-align: center;
+            position: relative; z-index: 2; 
+        }
+
+        /* تنسيقات المنطقة المحظورة والميديا */
+        .restricted-section {
+            margin-top: 40px; padding-top: 30px; 
+            border-top: 1px dashed rgba(255, 126, 179, 0.3);
+            display: flex; flex-direction: column; align-items: center; width: 100%;
+        }
+
+        .floating-container {
+            position: relative; height: 350px; width: 100%; margin-top: 20px; overflow: hidden; border-radius: 20px;
+        }
+        .floating-item {
+            width: 55px; height: 55px;
+            background: linear-gradient(145deg, rgba(255,117,140,0.4), rgba(255,126,179,0.4));
+            border: 1px solid rgba(255, 126, 179, 0.8); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 22px; cursor: pointer; position: absolute;
+            box-shadow: 0 0 15px rgba(255, 126, 179, 0.5);
+        }
+
+        @keyframes floatCircular {
+            0% { transform: rotate(0deg) translateX(35px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(35px) rotate(-360deg); }
+        }
+        @keyframes floatSpiral {
+            0% { transform: rotate(0deg) translateY(20px) translateX(15px) rotate(0deg); }
+            100% { transform: rotate(-360deg) translateY(20px) translateX(45px) rotate(360deg); }
+        }
+
+        .docked-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; width: 100%;
+        }
+        .docked-item {
+            width: 75px; height: 75px; background: rgba(42, 31, 34, 0.6);
+            border: 1px solid #3d272b; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; cursor: pointer; transition: 0.3s;
+        }
+        .docked-item img, .docked-item video {
+            width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+        }
+
+        /* تنسيقات الرسالة الختامية */
+        .final-letter-icon {
+            width: 70px; height: 70px;
+            background: rgba(255, 105, 135, 0.2); border: 2px solid #ff7eb3;
+            border-radius: 20px; display: flex; justify-content: center; align-items: center;
+            font-size: 35px; cursor: pointer; animation: floatBubble 3s infinite ease-in-out alternate;
+            box-shadow: 0 0 20px rgba(255, 126, 179, 0.4);
+        }
+        @keyframes floatBubble {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+
+        .scroll-fade-container {
+            max-height: 280px; overflow-y: auto; padding: 60px 10px;
+            text-align: justify; text-justify: inter-word; line-height: 1.8; font-size: 16px; color: #fff;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+            scrollbar-width: none;
+        }
+        .scroll-fade-container::-webkit-scrollbar { display: none; }
+        .scroll-fade-container p { margin-bottom: 20px; }
+
+        /* --- تنسيقات التواريخ الجديدة --- */
+        .timeline-grid {
+            width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 20px; text-align: right;
+        }
+        .timeline-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.03); padding: 10px 15px; border-radius: 15px;
+            border: 1px solid rgba(255, 126, 179, 0.1);
+        }
+        .timeline-label { color: #ff7eb3; font-weight: 800; font-size: 14px; }
+        .timeline-date { color: #ffffff; font-weight: 600; font-size: 14px; }
+
+        /* حركة موجة النقط المستمرة */
+        .w-dot-container { display: inline-flex; gap: 2px; margin-right: 4px; }
+        .w-dot {
+            width: 4px; height: 4px; background-color: #ffffff; border-radius: 50%;
+            display: inline-block; animation: waveDots 1.3s infinite ease-in-out;
+        }
+        .w-dot:nth-child(2) { animation-delay: -1.1s; }
+        .w-dot:nth-child(3) { animation-delay: -0.9s; }
+        @keyframes waveDots {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        /* تنسيق الصورة النهائية */
+        .final-img {
+            width: 100%; max-width: 320px; margin-top: 30px; border-radius: 20px;
+            border: 2px solid #3d272b; box-shadow: 0 0 15px rgba(255,105,135,0.2);
+        }
+
+        /* --- تنسيق المربع الأبدي الحيوي --- */
+        .eternal-box {
+            position: relative; width: 85%; max-width: 320px; margin-top: 20px; margin-bottom: 20px;
+            background: linear-gradient(135deg, #1f1517, #110b0d); padding: 25px; border-radius: 25px;
+            border: 2px solid #ff7eb3; text-align: center; color: #fff;
+            font-size: 16px; font-weight: 800; line-height: 1.6;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            animation: pulseBox 2s infinite ease-in-out alternate;
+            box-shadow: 0 0 25px rgba(255, 126, 179, 0.6);
+        }
+        @keyframes pulseBox {
+            0% { transform: scale(1); box-shadow: 0 0 25px rgba(255, 126, 179, 0.6); }
+            100% { transform: scale(1.03); box-shadow: 0 0 40px rgba(255, 126, 179, 0.9); }
+        }
+
+        /* حركة موجة القلوب المستمرة */
+        .w-heart-container { display: inline-flex; gap: 4px; margin-right: 6px; }
+        .w-heart { display: inline-block; animation: waveHearts 1.3s infinite ease-in-out; }
+        .w-heart:nth-child(2) { animation-delay: -1.1s; }
+        .w-heart:nth-child(3) { animation-delay: -0.9s; }
+        @keyframes waveHearts {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .eternal-particle { position: absolute; pointer-events: none; z-index: 5; }
+
+        #main-screen { display: none; opacity: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="hearts-container" id="hearts-container"></div>
+    <div class="hearts-container" id="final-snow-hearts-container"></div>
+    
+    <div class="status-bar">
+        <span class="left">2/2/2000</span>
+        <span class="center" style="font-weight: 800;">احمد ❤️ آية</span>
+        <span class="right">2001/1/1</span>
+    </div>
+
+    <div class="screen-container" id="splash-screen">
+        <div class="card">
+            <h1>OUR STORY</h1>
+            <h2>جاهزة يا حبيبي</h2>
+            <div class="input-container">
+                <input type="password" id="passwordInput" placeholder="اكتبي الباسورد يا يويو ❤️">
+            </div>
+            <button class="btn-glow" id="submitBtn">دوسي هنا بسرررعة 😁</button>
+        </div>
+    </div>
+
+    <div class="screen-container" id="main-screen">
+        <div class="card" style="background: transparent; border: none; box-shadow: none; padding-bottom: 0;">
+            <h1 style="font-size: 24px;">بداية حكاياتنا 😍❤️</h1>
+            <h2 style="color: #ff7eb3; font-weight: 800; font-size: 18px;">احمد ❤️ آية</h2>
+
+            <div class="counter-section">
+                <div class="counter-box"><div class="counter-value" id="years">00</div><div class="counter-label">سنين</div></div>
+                <div class="counter-box"><div class="counter-value" id="months">00</div><div class="counter-label">شهور</div></div>
+                <div class="counter-box"><div class="counter-value" id="days">00</div><div class="counter-label">أيام</div></div>
+                <div class="counter-box"><div class="counter-value" id="hours">00</div><div class="counter-label">ساعات</div></div>
+                <div class="counter-box"><div class="counter-value" id="minutes">00</div><div class="counter-label">دقايق</div></div>
+                <div class="counter-box"><div class="counter-value" id="seconds">00</div><div class="counter-label">ثواني</div></div>
+            </div>
+
+            <div class="audio-section">
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 800;">MADE WITH LOVE</div>
+                        <div style="color: #ff7eb3; font-size: 13px;">بحبك ❤️</div>
+                    </div>
+                    <div class="album-art"><img src="image_5.png"></div>
+                </div>
+                <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="current-time" style="font-size: 11px;">0:00</span>
+                    <button class="play-pause-btn" id="play-pause-btn">▶</button>
+                    <span id="total-time" style="font-size: 11px;">0:00</span>
+                </div>
+                <audio id="myAudio" loop><source src="song.mp3" type="audio/mpeg"></audio>
+            </div>
+
+            <div class="letters-intro" id="lettersIntro">
+                عايز اقولك انكـ
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+
+            <div class="letters-grid">
+                <div class="letter-wrapper">
+                    <div class="letter-icon" id="icon-0" onclick="handleLetterClick(0)">✉️</div>
+                    <div class="full-content-box" id="box-0"></div>
+                </div>
+                <div class="letter-wrapper">
+                    <div class="letter-icon locked" id="icon-1" onclick="handleLetterClick(1)">✉️</div>
+                    <div class="full-content-box" id="box-1"></div>
+                </div>
+                <div class="letter-wrapper">
+                    <div class="letter-icon locked" id="icon-2" onclick="handleLetterClick(2)">✉️</div>
+                    <div class="full-content-box" id="box-2"></div>
+                </div>
+            </div>
+
+            <div class="restricted-section" id="restricted-section">
+                <div class="letters-intro" id="restrictedIntro">
+                    منطقة محظوره قلب حموكشا
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                
+                <div class="input-container" id="restrictedInputBox" style="width: 100%; margin-top: 10px;">
+                    <input type="password" id="restrictedPassword" placeholder="افتحي الرسايل كلها الأول 🔒" disabled>
+                </div>
+
+                <div id="secretContent" style="display: none; width: 100%; margin-top: 15px;">
+                    <div id="floating-gallery" class="floating-container"></div>
+                    <div id="docked-gallery" class="docked-grid"></div>
+                    
+                    <div id="finalLetterContainer" class="letter-wrapper" style="display:none; width: 100%; margin-top:40px;">
+                        <div class="final-letter-icon" id="finalIcon" onclick="openFinalLetter()">💌</div>
+                        <div class="full-content-box" id="finalBox" style="text-align: justify; text-justify: inter-word; line-height: 1.8; margin-top: 15px;">
+                            <p style="margin-top:0;">انا انسان طبيعي زي اي انسان وممكن يكون فيا مميزات واكيد فيا عيوب لكن مبسوط وانا عارف انك هتحتويني 😊 بمميزاتي وعيوبي وهتحبيني زي ما انا ، الانسانه الوحيده اللي قلبي وبدون مبالغه او تردد فتح ابوابه ليها بدون حدود او مخاوف</p>
+                            <p>وسلمت قلبي ليكي وانا مطمن عليه ومش قلبي بس دا حياتي ومستقبلي واهلي والدايره الصغيره من كل اللي بحبهم حبيت اشاركهم معاكي</p>
+                            <p>انتي اهم انسانه دخلت قلبي وعندي حاجه كبيره جدا واللي اقدر اقدمهولك من حقك عليا ان عمرك ما تهوني عليا ولا علي قلبي وافضل اكبر في صورتي جوا عنيكي وعيون ولادنا ان شاء الله ونأسس بيت هادي وجميل محافظين عليه سوا وبين عيلتين ولادنا قادرين انهم يبنوا شخصيتهم بدون مخاوف وكسبت حما وحماه بمثابه اب وام واخوات</p>
+                            <p style="text-align: center; font-weight: 800; color: #ff7eb3; margin-bottom: 0;">ومش ناسي توتا باشا اصماله عليه واخد تصريح دبلوماسي 😁</p>
+                        </div>
+                    </div>
+
+                    <div id="finalTimelineArea" style="display:none; width:100%; align-items:center; flex-direction:column;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="letter-overlay" id="letterOverlay" onclick="closeLetter()">
+        <div class="letter-content" onclick="event.stopPropagation()">
+            <div id="letterText" style="line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <div class="letter-overlay" id="finalLetterOverlay" onclick="closeFinalLetter()">
+        <div class="letter-content" onclick="event.stopPropagation()">
+            <div class="scroll-fade-container">
+                <p>انا انسان طبيعي زي اي انسان وممكن يكون فيا مميزات واكيد فيا عيوب لكن مبسوط وانا عارف انك هتحتويني 😊 بمميزاتي وعيوبي وهتحبيني زي ما انا ، الانسانه الوحيده اللي قلبي وبدون مبالغه او تردد فتح ابوابه ليها بدون حدود او مخاوف</p>
+                <p>وسلمت قلبي ليكي وانا مطمن عليه ومش قلبي بس دا حياتي ومستقبلي واهلي والدايره الصغيره من كل اللي بحبهم حبيت اشاركهم معاكي</p>
+                <p>انتي اهم انسانه دخلت قلبي وعندي حاجه كبيره جدا واللي اقدر اقدمهولك من حقك عليا ان عمرك ما تهوني عليا ولا علي قلبي وافضل اكبر في صورتي جوا عنيكي وعيون ولادنا ان شاء الله ونأسس بيت هادي وجميل محافظين عليه سوا وبين عيلتين ولادنا قادرين انهم يبنوا شخصيتهم بدون مخاوف وكسبت حما وحماه بمثابه اب وام واخوات</p>
+                <p style="text-align: center; font-weight: 800; color: #ff7eb3; margin-top: 30px;">ومش ناسي توتا باشا اصماله عليه واخد تصريح دبلوماسي 😁</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="letter-overlay" id="mediaOverlay" onclick="closeMedia()">
+        <div class="letter-content" style="padding: 0; background: transparent; border: none; box-shadow: none; max-width: 450px; width: 95%;" onclick="event.stopPropagation()">
+            <div id="mediaContentBox" style="width: 100%; max-height: 90vh; display: flex; justify-content: center; align-items: center; border-radius: 20px; overflow: hidden; box-shadow: 0 0 40px rgba(255, 126, 179, 0.5);"></div>
+        </div>
+    </div>
+
+    <script>
+        const msg = [
+            "<div style='text-align:center;'>تستحقين أن تكوني جميع محاولاتي دائما ❤️</div>",
+            "لم انتظر مناسبة لأخبركِ أنكِ أجمل تفاصيل حياتي\nكل سنه وانتي كل اعيادي وحياتي وروحي الحلوة\n<span style='float:left; color:#ff7eb3; font-weight:800;'>حموكشا</span><div style='clear:both'></div>",
+            "كنتي دائما موضع الطمأنينه الذي الجأ اليه واحدثه دائما عن أحوالي\nلذا اتمني ان لا يغلق هذا الموضع ابداً لكي لا افقد نفسي واصبح وحيدا\n<div style='text-align:center; color:#ff7eb3; font-weight:800; margin-top:10px;'>بدونك</div>"
+        ];
+
+        let lettersProgress = 0;
+        let wasAudioPlaying = false;
+        let snowInterval;
+        let finalAnimInterval;
+
+        function startSnow(overlayId) {
+            const overlay = document.getElementById(overlayId);
+            snowInterval = setInterval(() => {
+                const sf = document.createElement('div');
+                sf.className = 'snowflake';
+                const size = Math.random() * 4 + 3;
+                sf.style.width = size + 'px';
+                sf.style.height = size + 'px';
+                sf.style.left = Math.random() * 100 + 'vw';
+                sf.style.animationDuration = Math.random() * 3 + 3 + 's';
+                overlay.appendChild(sf);
+                setTimeout(() => { if(sf.parentNode) sf.remove(); }, 6000);
+            }, 150);
+        }
+
+        function stopSnow(overlayId) {
+            clearInterval(snowInterval);
+            const snowflakes = document.getElementById(overlayId).querySelectorAll('.snowflake');
+            snowflakes.forEach(sf => sf.remove());
+        }
+
+        function startEternalAnims() {
+            const container = document.getElementById('final-snow-hearts-container');
+            const eternalBox = document.getElementById('eternalBox');
+            
+            finalAnimInterval = setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'eternal-particle';
+                
+                const isHeart = Math.random() > 0.4;
+                
+                if (isHeart) {
+                    p.innerHTML = '❤️';
+                    p.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                    p.style.color = `rgba(255, ${Math.random()*100+100}, ${Math.random()*100+100}, 0.8)`;
+                } else {
+                    p.innerHTML = '❄️';
+                    p.style.fontSize = (Math.random() * 8 + 8) + 'px';
+                    p.style.color = 'rgba(255, 255, 255, 0.7)';
+                }
+
+                const boxRect = eternalBox.getBoundingClientRect();
+                const startX = boxRect.left + Math.random() * boxRect.width;
+                const startY = boxRect.top + window.scrollY - 20;
+
+                p.style.left = startX + 'px';
+                p.style.top = startY + 'px';
+                
+                p.style.transition = `transform ${Math.random()*2+2}s ease-out, opacity ${Math.random()*2+2}s ease-out`;
+                container.appendChild(p);
+
+                setTimeout(() => {
+                    p.style.transform = `translateY(${Math.random()*100+150}px) translateX(${Math.random()*40-20}px) rotate(${Math.random()*360}deg)`;
+                    p.style.opacity = '0';
+                }, 50);
+
+                setTimeout(() => { if(p.parentNode) p.remove(); }, 4000);
+            }, 250);
+        }
+
+        setInterval(() => {
+            const h = document.createElement('div'); h.className='heart';
+            h.style.left=Math.random()*100+'vw'; h.style.animationDuration=Math.random()*2+3+'s';
+            document.getElementById('hearts-container').appendChild(h);
+            setTimeout(()=>h.remove(), 5000);
+        }, 400);
+
+        document.getElementById('submitBtn').onclick = () => {
+            if(document.getElementById('passwordInput').value === "422026") {
+                document.getElementById('splash-screen').style.display='none';
+                const m = document.getElementById('main-screen'); m.style.display='flex';
+                setTimeout(()=>m.style.opacity='1', 50);
+                audio.play(); playBtn.innerText='⏸';
+            } else alert("الباسورد غلط يا يويو 💖");
+        };
+
+        setInterval(() => {
+            const d = moment.duration(moment().diff(moment("04022026", "DDMMYYYY")));
+            if(d.asMilliseconds()>0){
+                document.getElementById('years').innerText=String(Math.floor(d.asYears())).padStart(2,'0');
+                document.getElementById('months').innerText=String(d.months()).padStart(2,'0');
+                document.getElementById('days').innerText=String(d.days()).padStart(2,'0');
+                document.getElementById('hours').innerText=String(d.hours()).padStart(2,'0');
+                document.getElementById('minutes').innerText=String(d.minutes()).padStart(2,'0');
+                document.getElementById('seconds').innerText=String(d.seconds()).padStart(2,'0');
+            }
+        }, 1000);
+
+        const audio = document.getElementById('myAudio');
+        const playBtn = document.getElementById('play-pause-btn');
+        playBtn.onclick = () => audio.paused ? (audio.play(), playBtn.innerText='⏸') : (audio.pause(), playBtn.innerText='▶');
+        audio.ontimeupdate = () => {
+            document.getElementById('progress-bar').style.width = (audio.currentTime/audio.duration)*100+'%';
+            document.getElementById('current-time').innerText = Math.floor(audio.currentTime/60)+":"+String(Math.floor(audio.currentTime%60)).padStart(2,'0');
+            document.getElementById('total-time').innerText = Math.floor(audio.duration/60)+":"+String(Math.floor(audio.duration%60)).padStart(2,'0');
+        };
+
+        function handleLetterClick(i) {
+            if (i > lettersProgress) return; 
+
+            document.getElementById('lettersIntro').style.display = 'none';
+            const icon = document.getElementById('icon-'+i);
+            icon.classList.add('flying');
+            const trail = setInterval(() => {
+                const th = document.createElement('div'); th.innerHTML='❤️'; th.className='trail-heart';
+                const r = icon.getBoundingClientRect(); th.style.left=r.left+20+'px'; th.style.top=r.top+'px';
+                document.body.appendChild(th); setTimeout(()=>th.remove(), 600);
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(trail);
+                document.getElementById('letterText').innerHTML = msg[i];
+                document.getElementById('letterOverlay').style.display = 'flex';
+                
+                startSnow('letterOverlay'); 
+
+                icon.classList.remove('flying');
+                const box = document.getElementById('box-'+i);
+                box.innerHTML = msg[i];
+                box.style.display = 'block';
+                
+                if (i === lettersProgress && i < 2) {
+                    lettersProgress++;
+                    const nextIcon = document.getElementById('icon-' + lettersProgress);
+                    nextIcon.classList.remove('locked');
+                } else if (i === 2 && i === lettersProgress) {
+                    lettersProgress++; 
+                    const restrictedInput = document.getElementById('restrictedPassword');
+                    restrictedInput.disabled = false;
+                    restrictedInput.placeholder = "اكتبي الباسورد يا يويو ❤️";
+                }
+            }, 800);
+        }
+
+        function closeLetter() { 
+            document.getElementById('letterOverlay').style.display = 'none'; 
+            stopSnow('letterOverlay'); 
+        }
+
+        const mediaFiles = [
+            { type: 'img', src: 'image11.jpg' },
+            { type: 'img', src: 'image12.jpg' },
+            { type: 'img', src: 'image13.jpg' },
+            { type: 'img', src: 'image14.jpg' },
+            { type: 'img', src: 'image15.jpg' },
+            { type: 'vid', src: 'video1.mp4' },
+            { type: 'vid', src: 'video2.mp4' },
+            { type: 'vid', src: 'video3.mp4' }
+        ];
+
+        document.getElementById('restrictedPassword').addEventListener('input', function(e) {
+            if (e.target.value === "422026") {
+                document.getElementById('restrictedInputBox').style.display = 'none';
+                document.getElementById('restrictedIntro').innerHTML = "منطقة محظوره قلب حموكشا 🔓❤️";
+                document.getElementById('secretContent').style.display = 'block';
+
+                const floatContainer = document.getElementById('floating-gallery');
+                floatContainer.innerHTML = '';
+                mediaFiles.forEach((file, index) => {
+                    const el = document.createElement('div');
+                    el.className = 'floating-item';
+                    el.innerHTML = file.type === 'img' ? '📸' : '🎥';
+                    
+                    el.style.left = (Math.random() * 70 + 10) + '%';
+                    el.style.top = (Math.random() * 70 + 10) + '%';
+                    el.style.animation = (Math.random() > 0.5 ? 'floatCircular ' : 'floatSpiral ') + (Math.random() * 3 + 4) + 's linear infinite';
+                    
+                    el.onclick = () => openMedia(el, file);
+                    floatContainer.appendChild(el);
+                });
+            }
+        });
+
+        function openMedia(el, file) {
+            const box = document.getElementById('mediaContentBox');
+            if (file.type === 'img') {
+                box.innerHTML = `<img src="${file.src}" style="width: 100%; display: block; border-radius: 15px;">`;
+            } else {
+                box.innerHTML = `<video src="${file.src}" controls autoplay style="width: 100%; display: block; border-radius: 15px; outline: none;"></video>`;
+                if (!audio.paused) {
+                    wasAudioPlaying = true;
+                    audio.pause();
+                    document.getElementById('play-pause-btn').innerText = '▶';
+                }
+            }
+            document.getElementById('mediaOverlay').style.display = 'flex';
+            
+            if (el.parentNode.id === 'floating-gallery') {
+                el.className = 'docked-item';
+                el.style = ''; 
+                
+                if(file.type === 'img') {
+                    el.innerHTML = `<img src="${file.src}">`;
+                } else {
+                    el.innerHTML = `<video src="${file.src}"></video>`; 
+                }
+                
+                document.getElementById('docked-gallery').appendChild(el);
+                
+                const floatContainer = document.getElementById('floating-gallery');
+                if (floatContainer.children.length === 0) {
+                    floatContainer.style.display = 'none';
+                    document.getElementById('finalLetterContainer').style.display = 'flex';
+                }
+            }
+        }
+
+        function closeMedia() { 
+            document.getElementById('mediaOverlay').style.display = 'none';
+            document.getElementById('mediaContentBox').innerHTML = ''; 
+            
+            if (wasAudioPlaying) {
+                audio.play();
+                document.getElementById('play-pause-btn').innerText = '⏸';
+                wasAudioPlaying = false; 
+            }
+        }
+
+        function showFinalTimeline() {
+            const area = document.getElementById('finalTimelineArea');
+            area.innerHTML = `
+                <div class="timeline-grid">
+                    <div class="timeline-row"><span class="timeline-label">😍عيد ميلاد حبيبتي</span><span class="timeline-date">2001/1/1</span></div>
+                    <div class="timeline-row"><span class="timeline-label">😎عيد ميلاد حموكشا</span><span class="timeline-date">2000/2/2</span></div>
+                    <div class="timeline-row"><span class="timeline-label">🤭اول مره فتحنا الموضوع</span><span class="timeline-date">2026/2/4</span></div>
+                    <div class="timeline-row"><span class="timeline-label">🤲قراية الفاتحة</span><span class="timeline-date">SOON <span class="w-dot-container"><span class="w-dot"></span><span class="w-dot"></span><span class="w-dot"></span></span></span></div>
+                    <div class="timeline-row"><span class="timeline-label">💍خطوبتنا</span><span class="timeline-date">SOON <span class="w-dot-container"><span class="w-dot"></span><span class="w-dot"></span><span class="w-dot"></span></span></span></div>
+                    <div class="timeline-row"><span class="timeline-label">💑كتب الكتاب</span><span class="timeline-date">SOON <span class="w-dot-container"><span class="w-dot"></span><span class="w-dot"></span><span class="w-dot"></span></span></span></div>
+                    <div class="timeline-row"><span class="timeline-label">👰🏻‍♀️ليلة عمرنا🤵🏻‍♂️</span><span class="timeline-date">WAITING <span class="w-dot-container"><span class="w-dot"></span><span class="w-dot"></span><span class="w-dot"></span></span></span></div>
+                </div>
+                
+                <img src="IMAGE422026.jpg" class="final-img" alt="IMAGE422026">
+                
+                <div class="eternal-box" id="eternalBox">
+                    <span style="display:block; margin-bottom:10px;">لا نهاية لك بداخلي،انتِ نعيمي الأبدي</span>
+                    بحبك يـ آية 🥰
+                    <span class="w-heart-container">
+                        <span class="w-heart">❤️</span>
+                        <span class="w-heart">❤️</span>
+                        <span class="w-heart">❤️</span>
+                    </span>
+                </div>
+            `;
+            area.style.display = 'flex';
+            setTimeout(startEternalAnims, 500);
+        }
+
+        function openFinalLetter() {
+            document.getElementById('finalLetterOverlay').style.display = 'flex';
+            startSnow('finalLetterOverlay'); 
+            
+            const icon = document.getElementById('finalIcon');
+            icon.style.animation = 'none'; 
+            
+            document.getElementById('finalBox').style.display = 'block';
+            showFinalTimeline();
+        }
+
+        function closeFinalLetter() {
+            document.getElementById('finalLetterOverlay').style.display = 'none';
+            stopSnow('finalLetterOverlay'); 
+        }
+    </script>
+</body>
+</html>
